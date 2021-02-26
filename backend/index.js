@@ -7,6 +7,7 @@ app.db = db;
 // Injetando o app que tem o EXPRESS nele dentro do meu middlewares.js
 consign()
   .then("./config/middlewares.js")
+  .then("./api/validation.js")
   .then("./api")
   .then("./config/routes.js")
   .into(app);
