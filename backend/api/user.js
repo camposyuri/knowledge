@@ -18,11 +18,15 @@ module.exports = (app) => {
     }
 
     try {
-      existsOrError(user.name, "Nome não informado");
-      existsOrError(user.email, "E-mail não informado");
-      existsOrError(user.password, "Senha não informada");
-      existsOrError(user.confirmPassword, "Confirmação de Senha inválida");
-      equalsOrError(user.password, user.confirmPassword, "Senhas não conferem");
+      existsOrError(user.name, "Name not provided");
+      existsOrError(user.email, "Email not informed");
+      existsOrError(user.password, "Password not entered");
+      existsOrError(user.confirmPassword, "Invalid Password Confirmation");
+      equalsOrError(
+        user.password,
+        user.confirmPassword,
+        "Passwords do not match"
+      );
 
       const userFromDB = await app
         .db("users")
@@ -31,7 +35,7 @@ module.exports = (app) => {
 
       // ID for diferente dos que já estão cadastrado ele cadastra
       if (!user.id) {
-        notExistsOrError(userFromDB, "Usuário já foi cadastrado");
+        notExistsOrError(userFromDB, "User has already been registered");
       }
     } catch (msg) {
       return res.status(400).send(msg);
