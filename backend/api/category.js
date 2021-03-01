@@ -108,10 +108,33 @@ module.exports = (app) => {
       .catch((err) => res.status(500).send(err));
   };
 
+  // Transformando um array em um estrutura de arvore
+  const toTree = (categories, tree) => {
+    // Para quem não tiver com o parentId setado TOPO DA ARVORE
+    if (!tree) {
+      tree = categories.filter((c) => !c.parentId);
+    }
+
+    tree = tree.map((parentNode) => {
+      const isChild = (node) => node.parentId == parentNode.id;
+      parentNode.children = toTree(categories, categories.filter(isChild));
+      return parentNode;
+    });
+    return tree;
+  };
+
+  const getTree = (req, res) => {
+    app
+      .db("categories")
+      .then((categories) => res.json(toTree(withPath(categories))))
+      .catch((err) => res.status(500).send(err));
+  };
+
   return {
     save,
     remove,
     get,
     getById,
+    getTree,
   };
 };
