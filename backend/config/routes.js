@@ -1,5 +1,6 @@
 module.exports = (app) => {
   app.route("/users").get(app.api.user.get).post(app.api.user.save);
+
   app.route("/users/:id").get(app.api.user.getById).put(app.api.user.save);
 
   app
@@ -15,4 +16,12 @@ module.exports = (app) => {
     .get(app.api.category.getById)
     .put(app.api.category.save)
     .delete(app.api.category.remove);
+
+  app.route("/articles").get(app.api.articles.get).post(app.api.articles.save);
+
+  app
+    .route("/articles/:id")
+    .get(app.api.articles.getById)
+    .put(app.api.articles.save)
+    .delete(app.api.articles.remove);
 };
