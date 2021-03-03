@@ -95,7 +95,10 @@ module.exports = (app) => {
   const getByCategory = async (req, res) => {
     const categoryId = req.params.id;
     const page = req.query.page || 1;
-    const categories = app.db.raw(queries.categoryWithChildren, categoryId);
+    const categories = await app.db.raw(
+      queries.categoryWithChildren,
+      categoryId
+    );
     // Array de IDs o proprio id da categoria pai + os IDs da categoria filhas
     const ids = categories.rows.map((c) => c.id);
 
@@ -106,7 +109,7 @@ module.exports = (app) => {
       })
       .limit(limit)
       .offset(page * limit - limit)
-      .whereRaw("?? = ??", ["u.id, a.userId"])
+      .whereRaw("?? = ??", ["u.id", "a.userId"])
       .whereIn("categoryId", ids)
       .orderBy("a.id", "desc")
       .then((articles) => res.json(articles))
