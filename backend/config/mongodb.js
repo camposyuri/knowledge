@@ -1,13 +1,14 @@
 const mongoose = require("mongoose");
+const { hostMongo, mongoAuth } = require("../.env");
 
 // Connect with MongoDB
 mongoose
-  .connect("mongodb://127.0.0.1:27017/", {
+  .connect(hostMongo, {
     useNewUrlParser: true,
     auth: {
-      user: "admin",
-      password: "325242"
-    }
+      user: mongoAuth.user,
+      password: mongoAuth.password,
+    },
   })
   .catch((e) => {
     const msg = "ERRO! Não foi possível conectar com o MongoDB!";
