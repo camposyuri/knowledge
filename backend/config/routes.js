@@ -1,7 +1,9 @@
 const admin = require("./admin");
 
 module.exports = (app) => {
+  // Cadastrando um novo usuário
   app.post("/signup", app.api.user.save);
+  // Logando com um usuário existente no sistema
   app.post("/signin", app.api.auth.signin);
   app.post("/validateToken", app.api.auth.validateToken);
 

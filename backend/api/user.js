@@ -17,6 +17,15 @@ module.exports = (app) => {
       user.id = req.params.id;
     }
 
+    // Validando se o cadastro do usuário admin veio da URL /users
+    if (!req.originalUrl.startsWith("/users")) {
+      user.admin = false;
+    }
+
+    if (!req.user || !req.user.admin) {
+      user.admin = false;
+    }
+
     try {
       existsOrError(user.name, "Name not provided");
       existsOrError(user.email, "Email not informed");
