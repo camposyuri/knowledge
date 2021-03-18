@@ -46,11 +46,14 @@ module.exports = (app) => {
     delete user.confirmPassword;
 
     // Se tem ID ele vai dar um UPDATE senão INSERT um novo user
+    // Usuando o filtro para atualizar somente
+    //os usuários que estão com a coluna deletedAt = NULL
     if (user.id) {
       app
         .db("users")
         .update(user)
         .where({ id: user.id })
+        .whereNull("deletedAt")
         .then((_) => res.status(204).send())
         .catch((err) => res.status(500).send(err));
     } else {
@@ -62,27 +65,54 @@ module.exports = (app) => {
     }
   };
 
+  // Usuando o filtro para trazer somente
+  //os usuários que estão com  a coluna deletedAt = NULL
   const get = (req, res) => {
     app
       .db("users")
       .select("id", "name", "email", "admin")
+      .whereNull("deletedAt")
       .then((users) => res.json(users))
       .catch((err) => res.status(500).send(err));
   };
 
+  // Usuando o filtro para trazer somente
+  //os usuários que estão com a coluna deletedAt = NULL
   const getById = (req, res) => {
     app
       .db("users")
       .select("id", "name", "email", "admin")
       .where({ id: req.params.id })
+      .whereNull("deletedAt")
       .first()
       .then((user) => res.json(user))
       .catch((err) => res.status(500).send(err));
+  };
+
+  // Fazendo um softDeleted
+  const remove = async (req, res) => {
+    try {
+      const articles = await app
+        .db("articles")
+        .where({ userId: req.params.id });
+      notExistsOrError(articles, "Usuário possui artigos.");
+
+      const rowsUpdated = await app
+        .db("users")
+        .update({ deletedAt: new Date() })
+        .where({ id: req.params.id });
+      existsOrError(rowsUpdated, "Usuário não foi encontrado");
+
+      return res.status(204).send();
+    } catch (msg) {
+      return res.status(400).send(msg);
+    }
   };
 
   return {
     save,
     get,
     getById,
+    remove,
   };
 };
